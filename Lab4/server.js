@@ -6,9 +6,9 @@ const port = process.env.PORT || 3000;
 const server = http.createServer((req, res) => {
     const parsedUrl = url.parse(req.url, true);
 
-    if (req.method === 'GET' && path === '/api/definitions') {
+    if (req.method === 'GET' && parsedUrl.path === '/api/definitions') {
 
-    } else if (req.method === 'POST' && path === '/api/definitions') {
+    } else if (req.method === 'POST' && parsedUrl.path === '/api/definitions') {
 
     } else {
         res.writeHead(404, { 'Content-Type': 'application/json' });
