@@ -1,12 +1,14 @@
 const http = require('http');
+const fs = require('fs');
 const url = require('url');
+const path = require('path');
 const PORT = process.env.PORT || 3000;
 let dictionary = [];
 let requestCount = 0;
 
 /*
-200: Succesfully found entry
-201: Succesfully added entry
+200: Succesfully found
+201: Succesful action
 400: Invalid request/input
 404: Not Found
 409: Conflict
@@ -19,10 +21,62 @@ const server = http.createServer((req, res) => {
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
     const parsedUrl = url.parse(req.url, true);
-    const path = parsedUrl.pathname;
+    const pathName = parsedUrl.pathname;
     const query = parsedUrl.query;
 
-    if (req.method === 'GET' && path === '/api/definitions') {
+    //chatgpt wrote from here tooooooo.......
+    if (pathName.startsWith('/scripts/') || pathName.startsWith('/styles/') || pathName.startsWith('/images/')) {
+        const filePath = path.join(__dirname, pathName);  // Construct the file path
+
+        const extname = path.extname(filePath);  // Get file extension for content-type
+        let contentType = 'text/plain';
+
+        // Determine the content-type based on file extension
+        if (extname === '.html') {
+            contentType = 'text/html';
+        } else if (extname === '.js') {
+            contentType = 'application/javascript';
+        } else if (extname === '.css') {
+            contentType = 'text/css';
+        } else if (extname === '.jpg' || extname === '.jpeg') {
+            contentType = 'image/jpeg';
+        } else if (extname === '.png') {
+            contentType = 'image/png';
+        }
+
+        // Read the static file and send it as the response
+        fs.readFile(filePath, (err, data) => {
+            if (err) {
+                res.writeHead(404, { 'Content-Type': 'text/plain' });
+                res.end('File not found');
+                return;
+            }
+
+            res.writeHead(200, { 'Content-Type': contentType });
+            res.end(data);
+        });
+        return;  // Stop further handling as static file has been served
+    }
+    //....oooo here
+
+
+    // Handle HTML pages (like /store and /search)
+    if (pathName === '/search' || pathName === '/store') {
+        const filePath = path.join(__dirname, 'views', pathName + '.html');
+        fs.readFile(filePath, 'utf-8', (err, data) => {
+            if (err) {
+                res.writeHead(404, { 'Content-Type': 'text/plain' });
+                res.end('File not found');
+                return;
+            }
+            res.writeHead(200, { 'Content-Type': 'text/html' });
+            res.end(data);
+        });
+        return;
+    }
+
+
+    if (req.method === 'GET' && pathName === '/api/definitions') {
 
         //get
         requestCount++;
@@ -43,15 +97,15 @@ const server = http.createServer((req, res) => {
         if (entry) {
             //returns the request count, word, and definiiton
             res.writeHead(200, { 'Content-Type': 'application/json' });
-            const definiiton = entry.definiiton;
-            res.end(JSON.stringify({ requestCount, word, definiiton }));
+            const definition = entry.definition;
+            res.end(JSON.stringify({ requestCount, word, definition }));
         } else {
             //error word not found
             res.writeHead(404, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ requestCount, message: 'Word ' + word + ' not found!' }));
         }
 
-    } else if (req.method === 'POST' && path === '/api/definitions') {
+    } else if (req.method === 'POST' && pathName === '/api/definitions') {
 
         //post
         let body = '';

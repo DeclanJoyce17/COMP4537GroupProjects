@@ -3,15 +3,15 @@
 
 <head>
     <title>Dictionary - Add Word</title>
-    <script defer src="script.js"></script>
+    <script defer src="../scripts/script.js"></script>
+    <!-- Ensure correct path to script.js -->
 </head>
-
 
 <body>
     <h2>Add a Word</h2>
     <input type="text" id="word" placeholder="Enter a word">
     <textarea id="definition" placeholder="Enter definition"></textarea>
-    <button onclick="addWord()">Submit</button>
+    <button onclick="dictionary.addWord()">Submit</button> <!-- Call addWord method -->
     <p id="response"></p>
 </body>
 
