@@ -1,4 +1,3 @@
-
 class Dictionary {
     constructor(api) {
         this.ApiURL = api
@@ -40,8 +39,11 @@ class Dictionary {
                 body: JSON.stringify({ word, definition })
             });
 
+            this.updateRequestCount();
+
             const data = await response.json()
             responseElement.innerText = data.message || "Error";
+
 
         } catch (errorType) {
             responseElement.innerText = error;
@@ -63,6 +65,8 @@ class Dictionary {
             // Send GET request to the server with the word in the query string
             const response = await fetch(`${this.ApiURL}?word=${word}`);
 
+            this.updateRequestCount();
+
             // Parse the response data
             const data = await response.json();
 
@@ -80,15 +84,27 @@ class Dictionary {
         }
     }
 
+    async updateRequestCount() {
+
+        const response = await fetch(`${this.ApiURL.replace("/api/definitions", "/api/stats")}`);
+        const data = await response.json();
+        const requestCount = data.requestCount;
+        const numWords = data.totalWords;
+
+        // Update the request count display on the page
+        const requestCounter = document.getElementById("requestCountDisplay");
+        requestCounter.innerText = 'Request Count: ' + requestCount;
+        const totalWords = document.getElementById("totalWordsDisplay");
+        totalWords.innerText = 'Total Words: ' + numWords;
+
+    }
 
 }
 
 // Initialize the dictionary object **outside the class** so it’s globally available
-const dictionary = new Dictionary(`https://comp4537groupprojects.onrender.com/api/definitions`);
-
+const dictionary = new Dictionary(`${window.location.origin}/api/definitions`);
 
 // Ensure that `dictionary` is available when the page is loaded
 document.addEventListener("DOMContentLoaded", () => {
-    console.log('Dictionary instance is ready to be used!');
-    console.log(`${window.location.origin}/api/definitions`);
+    dictionary.updateRequestCount();
 });

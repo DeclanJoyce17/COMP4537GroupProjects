@@ -148,6 +148,15 @@ const server = http.createServer((req, res) => {
 
         });
 
+    } else if (req.method === 'GET' && pathName === '/api/stats') {
+
+        // Return just request count and dictionary length
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+            requestCount,
+            totalWords: dictionary.length
+        }));
+
     } else {
 
         //error
