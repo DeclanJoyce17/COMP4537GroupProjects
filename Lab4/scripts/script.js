@@ -1,11 +1,12 @@
-import { MESSAGES } from '../lang/en/en.js';
+const MESSAGES = require("../lang/en/en.js")
 
 class Dictionary {
     constructor(api) {
         this.ApiURL = api;
         this.initEventListeners();
+        
     }
-
+    
     initEventListeners() {
         document.addEventListener("DOMContentLoaded", () => {
             const addbutton = document.getElementById("addBtn");
@@ -22,6 +23,7 @@ class Dictionary {
     }
 
     async addWord() {
+        
         const word = document.getElementById("word").value.trim();
         const definition = document.getElementById("definition").value.trim();
         const responseElement = document.getElementById("response");

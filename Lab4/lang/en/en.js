@@ -1,4 +1,4 @@
-export const MESSAGES = {
+module.exports = {
     INVALID_INPUT: "Invalid input. Please provide a valid word.",
     ADD_SUCCESS: "New word added successfully!",
     ADD_CONFLICT: "Warning! Word already exists.",
