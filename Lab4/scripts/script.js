@@ -1,19 +1,24 @@
-document.addEventListener("DOMContentLoaded", () => {
-    // Import MESSAGES when the DOM is loaded
-    const MESSAGES = require("../lang/en/en.js");
+// script.js
+// import { MESSAGES } from "../lang/en/en.js";  // Correct import statement
 
-    // Initialize the Dictionary class once MESSAGES is available
-    const dictionary = new Dictionary(`https://comp4537groupprojects.onrender.com/api/definitions`);
-    
-    console.log('Dictionary instance is ready to be used');
-});
+const MESSAGES = {
+    INVALID_INPUT: "Invalid input. Please provide a valid word.",
+    ADD_SUCCESS: "New word added successfully!",
+    ADD_CONFLICT: "Warning! Word already exists.",
+    ADD_ERROR: "Error adding the word.",
+    SEARCH_SUCCESS: "Word found!",
+    SEARCH_NOT_FOUND: "Word not found!",
+    SEARCH_ERROR: "Error retrieving the word.",
+    INVALID_WORD_INPUT: "Invalid input. Please provide a valid word.",
+    LOADING: "Loading...",
+}
 
 class Dictionary {
     constructor(api) {
         this.ApiURL = api;
         this.initEventListeners();
     }
-    
+
     initEventListeners() {
         document.addEventListener("DOMContentLoaded", () => {
             const addbutton = document.getElementById("addBtn");
@@ -89,3 +94,10 @@ class Dictionary {
         }
     }
 }
+
+// initialize dictionary
+const dictionary = new Dictionary(`https://comp4537groupprojects.onrender.com/api/definitions`);
+
+document.addEventListener("DOMContentLoaded", () => {
+    console.log('Dictionary instance is ready to be used');
+});
