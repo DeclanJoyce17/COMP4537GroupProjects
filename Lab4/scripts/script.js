@@ -1,4 +1,3 @@
-// Ensure that `dictionary` is available when the page is loaded
 class Dictionary {
     constructor(api) {
         this.ApiURL = api;
