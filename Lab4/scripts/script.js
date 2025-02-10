@@ -1,10 +1,17 @@
-const MESSAGES = require("../lang/en/en.js")
+document.addEventListener("DOMContentLoaded", () => {
+    // Import MESSAGES when the DOM is loaded
+    const MESSAGES = require("../lang/en/en.js");
+
+    // Initialize the Dictionary class once MESSAGES is available
+    const dictionary = new Dictionary(`https://comp4537groupprojects.onrender.com/api/definitions`);
+    
+    console.log('Dictionary instance is ready to be used');
+});
 
 class Dictionary {
     constructor(api) {
         this.ApiURL = api;
         this.initEventListeners();
-        
     }
     
     initEventListeners() {
@@ -23,18 +30,17 @@ class Dictionary {
     }
 
     async addWord() {
-        
         const word = document.getElementById("word").value.trim();
         const definition = document.getElementById("definition").value.trim();
         const responseElement = document.getElementById("response");
 
-        //input validation checking
+        // input validation checking
         if (!word || !definition || !/^[a-zA-Z]+$/.test(word)) {
             responseElement.innerText = MESSAGES.INVALID_WORD_INPUT;
             return;
         }
 
-        //send a post request to api
+        // send a post request to api
         try {
             const response = await fetch(this.ApiURL, {
                 method: "POST",
@@ -42,7 +48,7 @@ class Dictionary {
                 body: JSON.stringify({ word, definition }),
             });
 
-            //handle response from server
+            // handle response from server
             const data = await response.json();
             if (response.ok) {
                 responseElement.innerText = MESSAGES.ADD_SUCCESS;
@@ -60,19 +66,19 @@ class Dictionary {
         const word = document.getElementById("searchWord").value.trim();
         const resultElement = document.getElementById("searchResult");
 
-        //input validation checking
+        // input validation checking
         if (!word || !/^[a-zA-Z]+$/.test(word)) {
             resultElement.innerText = MESSAGES.INVALID_WORD_INPUT;
             return;
         }
 
         try {
-            //send get request to api
+            // send get request to api
             resultElement.innerText = MESSAGES.LOADING;
             const response = await fetch(`${this.ApiURL}?word=${word}`);
             const data = await response.json();
 
-            //handle the response from the server
+            // handle the response from the server
             if (response.ok) {
                 resultElement.innerText = `${data.word}: ${data.definition}`;
             } else {
@@ -83,10 +89,3 @@ class Dictionary {
         }
     }
 }
-
-//initialize dictionary
-const dictionary = new Dictionary(`https://comp4537groupprojects.onrender.com/api/definitions`);
-
-document.addEventListener("DOMContentLoaded", () => {
-    console.log('Dictionary instance is ready to be used');
-});
