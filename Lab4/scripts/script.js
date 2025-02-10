@@ -84,7 +84,8 @@ class Dictionary {
 }
 
 // Initialize the dictionary object **outside the class** so it’s globally available
-const dictionary = new Dictionary(`https://comp4537groupprojects.onrender.com/api/definitions`);
+const dictionary = new Dictionary(`${window.location.origin}/api/definitions`);
+
 
 // Ensure that `dictionary` is available when the page is loaded
 document.addEventListener("DOMContentLoaded", () => {
