@@ -3,20 +3,23 @@ const fs = require('fs');
 const url = require('url');
 const path = require('path');
 const PORT = process.env.PORT || 3000;
-
 let dictionary = [];
 let requestCount = 0;
 
 /*
-HTTP Status Codes:
-200: Successfully found
-201: Successful action
+200: Succesfully found
+201: Succesful action
 400: Invalid request/input
 404: Not Found
 409: Conflict
 */
 
 const server = http.createServer((req, res) => {
+
+    const parsedUrl = url.parse(req.url, true);
+    const pathName = parsedUrl.pathname;
+    const query = parsedUrl.query;
+
     // Set CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*'); // Allow all origins
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS'); // Allow specific methods
@@ -28,10 +31,6 @@ const server = http.createServer((req, res) => {
         res.end();
         return;
     }
-
-    const parsedUrl = url.parse(req.url, true);
-    const pathName = parsedUrl.pathname;
-    const query = parsedUrl.query;
 
     // Serve static files
     if (pathName.startsWith('/scripts/') || pathName.startsWith('/styles/') || pathName.startsWith('/images/')) {
@@ -74,70 +73,89 @@ const server = http.createServer((req, res) => {
         return;
     }
 
-    // Handle GET requests to /api/definitions
     if (req.method === 'GET' && pathName === '/api/definitions') {
+
+        //get
         requestCount++;
         const word = query.word;
 
+        //checks for validity of request
         if (!word || typeof word !== 'string') {
             res.writeHead(400, { 'Content-Type': 'application/json' });
-            return res.end(JSON.stringify({ message: 'Invalid request. Please provide a word.' }));
+            return res.end(JSON.stringify({ message: "Invalid request. Please provide a word." }));
         }
 
-        const entry = dictionary.find(entry => entry.word.toLowerCase() === word.toLowerCase());
+        //checks if the word exists at all
+        const entry = dictionary.find(entry => {
+            return entry.word.toLowerCase() === word.toLowerCase();
+        });
 
+        //decides what to do depending on if the word already exists
         if (entry) {
+            //returns the request count, word, and definiiton
             res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ requestCount, word, definition: entry.definition }));
+            const definition = entry.definition;
+            res.end(JSON.stringify({ requestCount, word, definition }));
         } else {
+            //error word not found
             res.writeHead(404, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ requestCount, message: `Word ${word} not found!` }));
+            res.end(JSON.stringify({ requestCount, message: 'Word ' + word + ' not found!' }));
         }
-    }
 
-    // Handle POST requests to /api/definitions
-    else if (req.method === 'POST' && pathName === '/api/definitions') {
+    } else if (req.method === 'POST' && pathName === '/api/definitions') {
+
+        //post
         let body = '';
         req.on('data', chunk => {
             body += chunk.toString();
         });
 
         req.on('end', () => {
+
             requestCount++;
             const data = JSON.parse(body);
             const word = data.word;
             const definition = data.definition;
 
+            //checks for valididty of the input
             if (!word || !definition || typeof word !== 'string' || typeof definition !== 'string') {
                 res.writeHead(400, { 'Content-Type': 'application/json' });
-                return res.end(JSON.stringify({ message: 'Invalid input. Word and definition must be non-empty strings.' }));
+                return res.end(JSON.stringify({ message: "Invalid input. Word and definition must be non-empty strings." }));
             }
 
-            const entry = dictionary.find(entry => entry.word.toLowerCase() === word.toLowerCase());
+            //checks if the word already exists
+            const entry = dictionary.find(entry => {
+                return entry.word.toLowerCase() === word.toLowerCase();
+            });
 
+            //decides what to do depending on whether the word exists
             if (entry) {
+                //error, word already exists
                 res.writeHead(409, { 'Content-Type': 'application/json' });
-                return res.end(JSON.stringify({ message: `Warning! ${word} already exists.` }));
+                return res.end(JSON.stringify({ message: 'Warning! ' + word + ' already exists.' }));
             } else {
+
+                //returns the request count, 
                 dictionary.push({ word, definition });
                 res.writeHead(201, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({
+                return res.end(JSON.stringify({
                     requestCount,
                     totalWords: dictionary.length,
-                    message: `New entry recorded: ${word}: ${definition}`,
+                    message: 'New entry recorded: ' + word + ':' + definition
                 }));
+
             }
+
         });
-    }
 
-    // Handle undefined routes
-    else {
+    } else {
+
+        //error
         res.writeHead(404, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ message: 'Endpoint not found.' }));
+        res.end(JSON.stringify({ message: "Endpoint not found." }));
+
     }
 });
 
-// Start the server
-server.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+//run the server
+server.listen(PORT);
