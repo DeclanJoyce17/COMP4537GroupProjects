@@ -49,5 +49,23 @@ class Dictionary{
 
         }
 
-        async searchWord() {}
+        async searchWord() {
+            const word = document.getElementById("searchWord").value.trim();
+            const resultElement = document.getElementById("searchResult");
+
+            //input validation
+            if (!word || !/^[a-zA-Z]+$/.test(word)) {
+                resultElement.innerText = "invalid input";
+                return;
+            }
+
+            try {
+                const response = await fetch(`${this.apiUrl}?word=${word}`);
+                const data = await response.json();
+
+                resultElement.innerText = data.definition ? `${data.word}: ${data.definition}` : data.message;
+            } catch (error) {
+            resultElement.innerText = error;
+        }
+    }
 }
