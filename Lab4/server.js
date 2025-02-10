@@ -161,6 +161,4 @@ const server = http.createServer((req, res) => {
 });
 
 //run the server
-server.listen(PORT, () => {
-    console.log('Server running at http://localhost:' + PORT + '/');
-});
+server.listen(PORT);
