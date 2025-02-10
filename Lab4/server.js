@@ -33,18 +33,20 @@ const server = http.createServer((req, res) => {
     }
 
     // Serve static files
-    if (pathName.startsWith('/scripts/') || pathName.startsWith('/styles/') || pathName.startsWith('/images/')) {
-        const filePath = path.join(__dirname, pathName);
-        const extname = path.extname(filePath);
+    if (pathName.startsWith('/scripts/') || pathName.startsWith('/styles/') || pathName.startsWith('/images/') || pathName.startsWith('/lang/')) {
+        const filePath = path.join(__dirname, pathName);  // Construct the correct file path
 
-        // Determine content type
+        const extname = path.extname(filePath);  // Get file extension for content-type
         let contentType = 'text/plain';
+
+        // Determine the content type based on file extension
         if (extname === '.html') contentType = 'text/html';
         else if (extname === '.js') contentType = 'application/javascript';
         else if (extname === '.css') contentType = 'text/css';
         else if (extname === '.jpg' || extname === '.jpeg') contentType = 'image/jpeg';
         else if (extname === '.png') contentType = 'image/png';
 
+        // Read the file and send it as a response
         fs.readFile(filePath, (err, data) => {
             if (err) {
                 res.writeHead(404, { 'Content-Type': 'text/plain' });
@@ -55,8 +57,9 @@ const server = http.createServer((req, res) => {
             res.writeHead(200, { 'Content-Type': contentType });
             res.end(data);
         });
-        return;
+        return;  // Stop further processing as static file has been served
     }
+
 
     // Serve HTML pages
     if (pathName === '/search' || pathName === '/store') {

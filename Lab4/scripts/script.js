@@ -1,8 +1,8 @@
+// Ensure that `dictionary` is available when the page is loaded
 class Dictionary {
     constructor(api) {
-        this.ApiURL = api
+        this.ApiURL = api;
         this.initEventListeners();
-
     }
 
     initEventListeners() {
@@ -15,7 +15,7 @@ class Dictionary {
             }
 
             if (searchbutton) {
-                addbutton.addEventListener("click", () => this.searchWord());
+                searchbutton.addEventListener("click", () => this.searchWord());
             }
         });
     }
@@ -25,44 +25,49 @@ class Dictionary {
         const definition = document.getElementById("definition").value.trim();
         const responseElement = document.getElementById("response");
 
-        //input validation checking
+        // input validation checking
         if (!word || !definition || !/^[a-zA-Z]+$/.test(word)) {
-            responseElement.innerText = "invalid input";
+            responseElement.innerText = MESSAGES.INVALID_WORD_INPUT;
             return;
         }
 
-
+        // send a post request to api
         try {
             const response = await fetch(this.ApiURL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ word, definition })
+                body: JSON.stringify({ word, definition }),
             });
 
             this.updateRequestCount();
 
-            const data = await response.json()
-            responseElement.innerText = data.message || "Error";
-
-
-        } catch (errorType) {
-            responseElement.innerText = error;
+            // handle response from server
+            const data = await response.json();
+            if (response.ok) {
+                responseElement.innerText = MESSAGES.ADD_SUCCESS;
+            } else if (response.status === 409) {
+                responseElement.innerText = MESSAGES.ADD_CONFLICT;
+            } else {
+                responseElement.innerText = MESSAGES.ADD_ERROR;
+            }
+        } catch (error) {
+            responseElement.innerText = `${MESSAGES.ADD_ERROR}: ${error.message}`;
         }
-
     }
 
     async searchWord() {
         const word = document.getElementById("searchWord").value.trim();
         const resultElement = document.getElementById("searchResult");
 
-        // Input validation
+        // input validation checking
         if (!word || !/^[a-zA-Z]+$/.test(word)) {
-            resultElement.innerText = "Invalid input. Please provide a valid word.";
+            resultElement.innerText = MESSAGES.INVALID_WORD_INPUT;
             return;
         }
 
         try {
-            // Send GET request to the server with the word in the query string
+            // send get request to api
+            resultElement.innerText = MESSAGES.LOADING;
             const response = await fetch(`${this.ApiURL}?word=${word}`);
 
             this.updateRequestCount();
@@ -70,22 +75,20 @@ class Dictionary {
             // Parse the response data
             const data = await response.json();
 
-            // Handle the response from the server
+            // handle the response from the server
             if (response.ok) {
-                // If the word exists, show the definition
                 resultElement.innerText = `${data.word}: ${data.definition}`;
             } else {
-                // If the word doesn't exist, show the error message
-                resultElement.innerText = data.message || "Word not found!";
+                resultElement.innerText = data.message || MESSAGES.SEARCH_NOT_FOUND;
             }
         } catch (error) {
-            // Handle any errors that occur during the fetch request
-            resultElement.innerText = `Error: ${error.message}`;
+            resultElement.innerText = `${MESSAGES.SEARCH_ERROR}: ${error.message}`;
         }
     }
 
     async updateRequestCount() {
 
+        // Grabs data from server side
         const response = await fetch(`${this.ApiURL.replace("/api/definitions", "/api/stats")}`);
         const data = await response.json();
         const requestCount = data.requestCount;
@@ -98,13 +101,14 @@ class Dictionary {
         totalWords.innerText = 'Total Words: ' + numWords;
 
     }
-
 }
 
-// Initialize the dictionary object **outside the class** so it’s globally available
 const dictionary = new Dictionary(`${window.location.origin}/api/definitions`);
 
-// Ensure that `dictionary` is available when the page is loaded
 document.addEventListener("DOMContentLoaded", () => {
+    console.log('Dictionary instance is ready to be used!');
+    console.log(`${window.location.origin}/api/definitions`);
+
+    // Initialize the Dictionary class once MESSAGES is available
     dictionary.updateRequestCount();
 });
