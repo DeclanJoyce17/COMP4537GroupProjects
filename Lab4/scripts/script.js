@@ -102,7 +102,7 @@ class Dictionary {
     }
 }
 
-const dictionary = new Dictionary(`${window.location.origin}/api/definitions`);
+const dictionary = new Dictionary(`https://comp4537groupprojects.onrender.com/api/definitions`);
 
 document.addEventListener("DOMContentLoaded", () => {
     console.log('Dictionary instance is ready to be used!');
