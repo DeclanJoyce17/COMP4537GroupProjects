@@ -10,11 +10,12 @@
 
 
 <body>
-    <h2>Index</h2>
-    <input type="text" id="searchWord" placeholder="Enter a word">
-    <button onclick="dictionary.searchWord()">Insert Rows</button>
-    <p id="searchResult"></p>
-
+    <h2>Database Client</h2>
+    <input type="text" id="insertRow" placeholder="Insert SQL Command">
+    <button onclick="database.InsertRow()">Insert SQL Command</button>
+    <p id="response"></p>
+    <br>
+    <button onclick="database.InsertSetRows()">Insert Rows</button>
     <p id="requestCountDisplay">Request Count: 0</p>
     <p id="totalWordsDisplay">Total Words: 0</p>
 </body>
