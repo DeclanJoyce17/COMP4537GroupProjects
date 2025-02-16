@@ -40,7 +40,7 @@ class Database {
     async InsertSetRows() {
         console.log('insertsetrows');
         const responseElement = document.getElementById("response");
-        const text = `INSERT INTO your_table_name (name, birthdate) VALUES
+        const text = `INSERT INTO lab5db (name, birthdate) VALUES
         ('Sara Brown', '1901-01-01'),
         ('John Smith', '1941-01-01'),
         ('Jack Ma', '1961-01-30'),

@@ -1,17 +1,18 @@
 const http = require('http');
 const mysql = require('mysql2');
+require('dotenv').config();
 const url = require('url');
-const PORT = process.env.PORT || 3000;
 const path = require('path');
 const fs = require('fs');
-
+const PORT = process.env.MYSQL_ADDON_PORT || 3000;
 
 const con = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'Giant777',
-    database: 'lab5db'
+    host: process.env.MYSQL_ADDON_HOST,
+    user: process.env.MYSQL_ADDON_USER,
+    password: process.env.MYSQL_ADDON_PASSWORD,
+    database: process.env.MYSQL_ADDON_DB
 });
+
 
 con.connect(err => {
 
