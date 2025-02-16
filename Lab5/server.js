@@ -111,7 +111,7 @@ const server = http.createServer((req, res) => {
                 return res.end("Missing required fields.");
             }
 
-            const sql = "INSERT INTO patient (name, dateOfBirth) VALUES (?, ?)";
+            const sql = "INSERT INTO lab5db (name, dateOfBirth) VALUES (?, ?)";
 
             con.query(sql, [name, dateOfBirth], (err, result) => {
                 if (err) {
