@@ -19,7 +19,7 @@ con.connect(err => {
     if (err) throw err;
     console.log("Connected to MySQL");
 
-    con.query("CREATE DATABASE IF NOT EXISTS lab5database", err => {
+    con.query(`CREATE DATABASE IF NOT EXISTS ${process.env.MYSQL_ADDON_DB}`, err => {
 
         if (err) throw err;
 
