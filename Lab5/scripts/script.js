@@ -1,6 +1,6 @@
 class Database {
     constructor(api) {
-        this.api = api;
+        this.ApiURL = api;
     }
 
     async InsertRow() {
@@ -20,8 +20,6 @@ class Database {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ query: text }),
             });
-
-            //this.updateRequestCount();
 
             // handle response from server
             const data = await response.json();
@@ -56,10 +54,14 @@ class Database {
                 body: JSON.stringify({ query: text }),
             });
 
-            //this.updateRequestCount();
+            let data;
+            const contentType = response.headers.get("Content-Type");
+            if (contentType && contentType.includes("application/json")) {
+                data = await response.json();
+            } else {
+                data = await response.text(); // If the response is not JSON, get the raw text.
+            }
 
-            // handle response from server
-            const data = await response.json();
             if (response.ok) {
                 responseElement.innerText = MESSAGES.ADD_SUCCESS;
             } else if (response.status === 409) {
@@ -69,9 +71,10 @@ class Database {
             }
             console.log(data)
         } catch (error) {
+            console.log("Nope");
             responseElement.innerText = `${MESSAGES.ADD_ERROR}: ${error.message}`;
         }
     }
 }
 
-const database = new Database("api");
+const database = new Database("http://localhost:3000/lab5/api/v1/sql");
