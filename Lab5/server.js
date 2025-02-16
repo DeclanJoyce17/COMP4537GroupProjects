@@ -4,13 +4,13 @@ require('dotenv').config();
 const url = require('url');
 const path = require('path');
 const fs = require('fs');
-const PORT = process.env.LOCALPORT || process.env.MYSQL_ADDON_PORT;
+const PORT = process.env.MYSQL_ADDON_PORT;
 
 const con = mysql.createConnection({
-    host: process.env.LOCALHOST || process.env.MYSQL_ADDON_HOST,
-    user: process.env.USER || process.env.MYSQL_ADDON_USER,
-    password: process.env.PASSWORD || process.env.MYSQL_ADDON_PASSWORD,
-    database: process.env.DATABASE || process.env.MYSQL_ADDON_DB
+    host: process.env.MYSQL_ADDON_HOST,
+    user: process.env.MYSQL_ADDON_USER,
+    password: process.env.MYSQL_ADDON_PASSWORD,
+    database: process.env.MYSQL_ADDON_DB
 });
 
 
