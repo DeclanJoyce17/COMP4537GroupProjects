@@ -18,7 +18,7 @@ class Database {
             const response = await fetch(this.ApiURL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text }),
+                body: JSON.stringify({ query: text }),
             });
 
             //this.updateRequestCount();
@@ -53,7 +53,7 @@ class Database {
             const response = await fetch(this.ApiURL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text }),
+                body: JSON.stringify({ query: text }),
             });
 
             //this.updateRequestCount();
