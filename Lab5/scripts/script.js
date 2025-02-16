@@ -18,8 +18,9 @@ class Database {
             const response = await fetch(this.ApiURL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ query: text }),
+                body: JSON.stringify({ name: text, dateOfBirth: "2025-02-16" }), // Assuming a static date for the example
             });
+
 
             // handle response from server
             const data = await response.json();
