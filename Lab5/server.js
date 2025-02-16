@@ -19,11 +19,11 @@ con.connect(err => {
     if (err) throw err;
     console.log("Connected to MySQL");
 
-    con.query("CREATE DATABASE IF NOT EXISTS lab5db", err => {
+    con.query("CREATE DATABASE IF NOT EXISTS lab5database", err => {
 
         if (err) throw err;
 
-        con.query(`CREATE TABLE IF NOT EXISTS patient (
+        con.query(`CREATE TABLE IF NOT EXISTS lab5db (
             id INT AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(255),
             dateOfBirth DATE
