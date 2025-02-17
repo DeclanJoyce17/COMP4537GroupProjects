@@ -84,4 +84,4 @@ class Database {
 
 }
 
-const database = new Database("http://localhost:3000/lab5/api/v1/sql");
+const database = new Database("https://comp4537groupprojects-lab5.onrender.com/lab5/api/v1/sql");
