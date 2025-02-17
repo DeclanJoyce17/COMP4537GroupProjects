@@ -136,6 +136,6 @@ class Database {
 
 }
 
-const database = new Database("http://localhost:3000/lab5/api/v1/sql");
-//const database = new Database("https://comp-4537-group-projectslab5.vercel.app/lab5/api/v1/sql");
+//const database = new Database("http://localhost:3000/lab5/api/v1/sql");
+const database = new Database("https://comp-4537-group-projectslab5.vercel.app/lab5/api/v1/sql");
 
