@@ -31,6 +31,7 @@ class Database {
             } else {
                 responseElement.innerText = MESSAGES.ADD_ERROR;
             }
+            database.getAllPatients();
             console.log(data)
         } catch (error) {
             responseElement.innerText = `${MESSAGES.ADD_ERROR}: ${error.message}`;
@@ -74,6 +75,7 @@ class Database {
                     responseElement.innerText += `Error inserting row ${i + 1}: ${row.name}\n`;
                 }
 
+                database.getAllPatients();
                 console.log(data); // Log the data for debugging
             } catch (error) {
                 console.log("Error:", error);
@@ -82,6 +84,45 @@ class Database {
         }
     }
 
+    async getAllPatients() {
+        const responseElement = document.getElementById('patients'); // Get the <p> tag with id='patients'
+
+        try {
+            const response = await fetch(this.ApiURL + '/select%20*%20from%20lab5db', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch data');
+            }
+
+            const data = await response.json();
+            console.log(data);  // Log the data or process it as needed
+
+            // Display the data inside the <p> tag
+            if (data && data.length > 0) {
+                // Format the data into a readable string
+                const patientList = data.map(patient => `${patient.name} (Born: ${patient.dateOfBirth})`).join('<br>');
+
+                responseElement.innerHTML = `Patients: <br>${patientList}`;
+            } else {
+                responseElement.innerText = "No patients found.";
+            }
+
+        } catch (error) {
+            console.error('Error fetching patients:', error);
+            responseElement.innerText = `Error fetching patients: ${error.message}`;
+        }
+
+    }
+
 }
 
 const database = new Database("http://localhost:3000/lab5/api/v1/sql");
+
+document.addEventListener("DOMContentLoaded", () => {
+    database.getAllPatients();
+});
