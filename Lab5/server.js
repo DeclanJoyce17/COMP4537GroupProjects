@@ -111,6 +111,8 @@ const server = http.createServer((req, res) => {
                 return res.end("Missing required fields.");
             }
 
+            console.log(rawSQL);
+
             con.query(rawSQL, (err, result) => {
                 if (err) {
                     res.writeHead(500, { 'Content-Type': 'text/plain' });

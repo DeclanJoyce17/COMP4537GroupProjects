@@ -13,7 +13,8 @@ class Database {
             return;
         }
 
-        let sqlQuery = inputElement.value.trim(); // Get raw SQL input
+        // Get raw SQL input
+        let sqlQuery = inputElement.value.trim();
 
         // Determine if it's a SELECT (GET) or an INSERT (POST)
         const isSelectQuery = sqlQuery.toUpperCase().startsWith("SELECT");
@@ -27,33 +28,58 @@ class Database {
         try {
 
             let fetchOptions;
+            let response;
 
-            if (isInsertQuery) {
+            if (isSelectQuery) {
 
                 fetchOptions = {
                     method: "GET",
                     headers: { "Content-Type": "application/json" },
                 };
 
+                response = await fetch(this.ApiURL + '/' + encodeURIComponent(sqlQuery), fetchOptions);
+
             } else {
 
                 fetchOptions = {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ query: sqlQuery })
+                    body: JSON.stringify({ rawSQL: sqlQuery })
                 };
+
+                response = await fetch(this.ApiURL, fetchOptions);
 
             }
 
-            const response = await fetch(this.ApiURL, fetchOptions);
             const data = await response.json();
 
             if (response.ok) {
                 responseElement.innerText = "Query executed successfully.";
                 console.log("Query Result:", data);
+
+                if (isSelectQuery) {
+                    const responseElement = document.getElementById('patients');
+
+                    if (data && data.length > 0) {
+                        const patientList = data.map(patient => {
+
+                            //Formats output to display only month, day, year, and no time
+                            const formattedDate = new Date(patient.dateOfBirth).toLocaleDateString('en-US');
+                            return `${patient.name} (Born: ${formattedDate})`;
+
+                        }).join('<br>');
+
+                        responseElement.innerHTML = patientList;
+                    } else {
+                        responseElement.innerText = "No patients found.";
+                    }
+
+                }
+
             } else {
                 responseElement.innerText = `Error: ${data.message || "Unknown error"}`;
             }
+
         } catch (error) {
             responseElement.innerText = `Error: ${error.message}`;
         }
@@ -62,6 +88,7 @@ class Database {
 
     async InsertSetRows() {
         const responseElement = document.getElementById("response");
+        responseElement.innerText = '';
         const dataToInsert = [
             { name: 'Sara Brown', dateOfBirth: '1901-01-01' },
             { name: 'John Smith', dateOfBirth: '1941-01-01' },
@@ -69,14 +96,16 @@ class Database {
             { name: 'Elon Musk', dateOfBirth: '1999-01-01' }
         ];
 
-        // Loop through each row of data and send a POST request
+        // Loop through each row of data and send a POST request with raw SQL
         for (let i = 0; i < dataToInsert.length; i++) {
             const row = dataToInsert[i];
+            const sqlQuery = `INSERT INTO lab5db (name, dateOfBirth) VALUES ('${row.name}', '${row.dateOfBirth}')`;
+
             try {
                 const response = await fetch(this.ApiURL, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ name: row.name, dateOfBirth: row.dateOfBirth }),
+                    body: JSON.stringify({ rawSQL: sqlQuery }), // Send raw SQL query as a string
                 });
 
                 let data;
@@ -96,7 +125,6 @@ class Database {
                     responseElement.innerText += `Error inserting row ${i + 1}: ${row.name}\n`;
                 }
 
-                database.getAllPatients();
                 console.log(data); // Log the data for debugging
             } catch (error) {
                 console.log("Error:", error);
@@ -105,45 +133,9 @@ class Database {
         }
     }
 
-    async getAllPatients() {
-        const responseElement = document.getElementById('patients'); // Get the <p> tag with id='patients'
-
-        try {
-            const response = await fetch(this.ApiURL + '/select%20*%20from%20lab5db', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch data');
-            }
-
-            const data = await response.json();
-            console.log(data);  // Log the data or process it as needed
-
-            // Display the data inside the <p> tag
-            if (data && data.length > 0) {
-                // Format the data into a readable string
-                const patientList = data.map(patient => `${patient.name} (Born: ${patient.dateOfBirth})`).join('<br>');
-
-                responseElement.innerHTML = `Patients: <br>${patientList}`;
-            } else {
-                responseElement.innerText = "No patients found.";
-            }
-
-        } catch (error) {
-            console.error('Error fetching patients:', error);
-            responseElement.innerText = `Error fetching patients: ${error.message}`;
-        }
-
-    }
 
 }
 
-//const database = new Database("http://localhost:3000/lab5/api/v1/sql");
-const database = new Database("https://comp-4537-group-projectslab5.vercel.app/lab5/api/v1/sql");
-document.addEventListener("DOMContentLoaded", () => {
-    database.getAllPatients();
-});
+const database = new Database("http://localhost:3000/lab5/api/v1/sql");
+//const database = new Database("https://comp-4537-group-projectslab5.vercel.app/lab5/api/v1/sql");
+

@@ -11,11 +11,14 @@
 
 <body>
     <h2>Database Client</h2>
-    <input type="text" id="insertRow" placeholder="Insert SQL Command">
+    <input type="text" id="insertRow" placeholder="Insert SQL Command"
+        style="width: 500px; height: 40px; font-size: 14px; padding: 5px;">
     <button onclick="database.InsertRow()">Insert SQL Command</button>
     <br>
     <br>
-    <button onclick="database.InsertSetRows()">Insert Rows</button>
+    <button onclick="database.InsertSetRows()">Insert Fixed Rows</button>
+    <p>SELECT * FROM lab5db;</p>
+    <p>INSERT INTO lab5db (name, dateOfBirth) VALUES ('John Doe', '1990-05-20');</p>
     <p id="response"></p>
     <p id="patients"></p>
 
