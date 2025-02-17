@@ -104,16 +104,14 @@ const server = http.createServer((req, res) => {
 
         req.on('end', () => {
 
-            const { name, dateOfBirth } = JSON.parse(body);
+            const { rawSQL } = JSON.parse(body);
 
-            if (!name || !dateOfBirth) {
+            if (!rawSQL) {
                 res.writeHead(400, { 'Content-Type': 'text/plain' });
                 return res.end("Missing required fields.");
             }
 
-            const sql = "INSERT INTO lab5db (name, dateOfBirth) VALUES (?, ?)";
-
-            con.query(sql, [name, dateOfBirth], (err, result) => {
+            con.query(rawSQL, (err, result) => {
                 if (err) {
                     res.writeHead(500, { 'Content-Type': 'text/plain' });
                     return res.end("Database error.");

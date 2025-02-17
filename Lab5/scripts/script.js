@@ -5,39 +5,60 @@ class Database {
 
     async InsertRow() {
         console.log('insertrow');
-        const text = document.getElementById("insertRow").value.trim();
         const responseElement = document.getElementById("response");
-        // input validation checking
-        if (!text || !/^[a-zA-Z]+$/.test(text)) {
-            responseElement.innerText = MESSAGES.INVALID_WORD_INPUT;
+        const inputElement = document.getElementById("insertRow");
+
+        if (!inputElement || !inputElement.value.trim()) {
+            responseElement.innerText = "Invalid SQL input.";
             return;
         }
 
-        // send a post request to api
-        try {
-            const response = await fetch(this.ApiURL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name: text, dateOfBirth: "2025-02-16" }), // Assuming a static date for the example
-            });
+        let sqlQuery = inputElement.value.trim(); // Get raw SQL input
 
+        // Determine if it's a SELECT (GET) or an INSERT (POST)
+        const isSelectQuery = sqlQuery.toUpperCase().startsWith("SELECT");
+        const isInsertQuery = sqlQuery.toUpperCase().startsWith("INSERT");
 
-            // handle response from server
-            const data = await response.json();
-            if (response.ok) {
-                responseElement.innerText = MESSAGES.ADD_SUCCESS;
-            } else if (response.status === 409) {
-                responseElement.innerText = MESSAGES.ADD_CONFLICT;
-            } else {
-                responseElement.innerText = MESSAGES.ADD_ERROR;
-            }
-            database.getAllPatients();
-            console.log(data)
-        } catch (error) {
-            responseElement.innerText = `${MESSAGES.ADD_ERROR}: ${error.message}`;
+        if (!isSelectQuery && !isInsertQuery) {
+            responseElement.innerText = "Only SELECT and INSERT queries are allowed.";
+            return;
         }
 
+        try {
+
+            let fetchOptions;
+
+            if (isInsertQuery) {
+
+                fetchOptions = {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                };
+
+            } else {
+
+                fetchOptions = {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ query: sqlQuery })
+                };
+
+            }
+
+            const response = await fetch(this.ApiURL, fetchOptions);
+            const data = await response.json();
+
+            if (response.ok) {
+                responseElement.innerText = "Query executed successfully.";
+                console.log("Query Result:", data);
+            } else {
+                responseElement.innerText = `Error: ${data.message || "Unknown error"}`;
+            }
+        } catch (error) {
+            responseElement.innerText = `Error: ${error.message}`;
+        }
     }
+
 
     async InsertSetRows() {
         const responseElement = document.getElementById("response");
