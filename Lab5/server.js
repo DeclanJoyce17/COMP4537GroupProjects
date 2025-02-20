@@ -13,38 +13,27 @@ const con = mysql.createConnection({
     database: process.env.MYSQL_ADDON_DB || process.env.DATABASE
 });
 
-con.connect(err => {
-    if (err) {
-        console.error("MySQL connection failed:", err.message);
-        return; // Stop execution gracefully
-    }
 
+con.connect(err => {
+
+    if (err) throw err;
     console.log("Connected to MySQL");
 
     con.query(`CREATE DATABASE IF NOT EXISTS ${process.env.MYSQL_ADDON_DB}`, err => {
-        if (err) {
-            console.error("Database creation failed:", err.message);
-            return;
-        }
 
-        console.log("Database ensured to exist");
+        if (err) throw err;
 
         con.query(`CREATE TABLE IF NOT EXISTS lab5db (
             id INT AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(255),
             dateOfBirth DATE
         ) ENGINE=InnoDB;`, err => {
-            if (err) {
-                console.error("Table creation failed:", err.message);
-                return;
-            }
-
-            console.log("Table ensured to exist");
+            if (err) throw err;
         });
+
 
     });
 });
-
 
 const server = http.createServer((req, res) => {
 
